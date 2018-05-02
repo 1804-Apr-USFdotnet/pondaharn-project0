@@ -4,11 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess;
+using NLog;
 
 namespace RestaurantClient
 {
     class Program
     {
+        static public void SerializeRestaurants()
+        {
+            string temp = Serializer.SerializeToJSON();
+            // WriteAllText creates a file, writes the specified string to the file,
+            // and then closes the file.    You do NOT need to call Flush() or Close().
+            System.IO.File.WriteAllText(@"C:\Users\Public\TestFolder\Restaraunts.txt", temp);
+        }
+
+        static public void DeserializeRestaurants()
+        {
+            string filePath = @"C:\Users\Public\TestFolder\Restaraunts.txt";
+            Serializer.JSONToDeserialize(filePath);
+        }
+
         static public void ShowDetails()
         {
             Console.WriteLine("\n");
@@ -52,13 +67,13 @@ namespace RestaurantClient
         {
             RestaurantCrud crud = new RestaurantCrud();
             double revs = crud.ShowAverageRating(restId);
-            Console.WriteLine("Ave.Rating: " + revs +"\n");
+            Console.WriteLine("Ave.Rating: " + revs + "\n");
         }
 
         static public void SearchRestaurants()
         {
             Console.WriteLine("\n");
-            Console.WriteLine("Please enter a name or part of a name");
+            Console.WriteLine("Please enter a name or part of a name then Enter");
             string searchStr = Console.ReadLine();
 
             RestaurantCrud crud = new RestaurantCrud();
@@ -72,7 +87,6 @@ namespace RestaurantClient
 
         static public void ShowAllRestaurants()
         {
-
             RestaurantCrud crud = new RestaurantCrud();
             var rests = crud.ShowRestaurants();
             Console.WriteLine("\n");
@@ -83,6 +97,7 @@ namespace RestaurantClient
             Console.WriteLine("\n");
         }
 
+        public static Logger logger = LogManager.GetCurrentClassLogger();
 
         static void Main(string[] args)
         {
@@ -102,34 +117,42 @@ namespace RestaurantClient
                 Console.WriteLine("Display (D)etails of a restaurant");
                 Console.WriteLine("Display all (R)eviews of a restaurant");
                 Console.WriteLine("(S)earch for a restaurant");
+                Console.WriteLine("Serialize restaurants to (J)SON");
+                Console.WriteLine("Deseriali(Z)e from 'C:\\Users\\Public\\TestFolder\\Restaraunts.txt");
                 Console.WriteLine("(Q)uit\n");
 
                 input = Console.ReadKey().KeyChar;
+                var logger = NLog.LogManager.GetCurrentClassLogger();
+                logger.Info($"User pressed {input}");
                 switch (input)
                 {
-                    case 'D':
-                    case 'd':
-                        ShowDetails();
-                        break;
-
-                    case 'R':
-                    case 'r':
-                        ShowReviews();
-                        break;
-
-                    case 'S':
-                    case 's':
-                        SearchRestaurants();
-                        break;
-
                     case 'A':
                     case 'a':
                         ShowAllRestaurants();
                         break;
-
+                    case 'D':
+                    case 'd':
+                        ShowDetails();
+                        break;
+                    case 'J':
+                    case 'j':
+                        SerializeRestaurants();
+                        break;
                     case 'Q':
                     case 'q':
                         Environment.Exit(0);
+                        break;
+                    case 'R':
+                    case 'r':
+                        ShowReviews();
+                        break;
+                    case 'S':
+                    case 's':
+                        SearchRestaurants();
+                        break;
+                    case 'Z':
+                    case 'z':
+                        DeserializeRestaurants();
                         break;
                 }
             }

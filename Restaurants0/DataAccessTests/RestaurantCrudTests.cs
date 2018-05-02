@@ -19,5 +19,18 @@ namespace DataAccess.Tests
             Restaurant rest = crud.FindRestById(i);
             Assert.AreEqual(i, rest.ID);
         }
+
+        [TestMethod()]
+        public void FindRestByNameTest()
+        {
+            string a = "a";
+            RestaurantCrud crud = new RestaurantCrud();
+            List<Restaurant> rests = crud.FindRestByName(a).ToList();
+            int count = rests.Count();
+            for (int i=0; i <count; i++)
+            {
+                StringAssert.Contains(rests.ElementAt(i).name, a);
+            }
+        }
     }
 }
